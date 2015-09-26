@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Calculator
@@ -136,14 +137,6 @@ namespace Calculator
         }
 
         /// <summary>
-        /// Learning how to use delegates, just figured I would throw this in
-        /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <returns></returns>
-        private delegate double Calculate(double x, double y);
-
-        /// <summary>
         /// Runs the actual calcualtions, I wouldn't usually do it this way for other developers sake.
         /// </summary>
         /// <param name="strX"></param>
@@ -152,9 +145,9 @@ namespace Calculator
         /// <returns></returns>
         private string CalculateValues(string strX, string strY, string calc)
         {
-            Calculate cal = (a, b) =>
+            Func<double, double, string, double> calculation = (a, b, c) =>
             {
-                switch (calc)
+                switch (c)
                 {
                     case "*":
                         return a * b;
@@ -168,7 +161,7 @@ namespace Calculator
                         return 0;
                 }
             };
-            return cal(double.Parse(strX), double.Parse(strY)).ToString();
+            return calculation(double.Parse(strX), double.Parse(strY), calc).ToString();
         }
     }
     
