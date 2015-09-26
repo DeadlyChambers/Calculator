@@ -107,9 +107,8 @@ namespace Calculator
             for (var x = 0; x < complexSection.Count; x++)
             {
                 if (complexSection[x] != "/" && complexSection[x] != "*") continue;
-                complexSection[x + 1] = complexSection[x] == "/"
-                    ? (double.Parse(complexSection[x - 1])/double.Parse(complexSection[x + 1])).ToString()
-                    : (double.Parse(complexSection[x - 1])*double.Parse(complexSection[x + 1])).ToString();
+                complexSection[x + 1] = CalculateValues(complexSection[x - 1], complexSection[x + 1],
+                    complexSection[x] == "/" ? "/" : "*");
                 complexSection[x - 1] = complexSection[x] = "";
                 x++;
             }
@@ -128,13 +127,48 @@ namespace Calculator
             for (var x = simpleSection.Count - 1; x >= 0; x--)
             {
                 if (simpleSection[x] != "-" && simpleSection[x] != "+") continue;
-                simpleSection[x - 1] = simpleSection[x] == "-"
-                    ? (double.Parse(simpleSection[x - 1]) - double.Parse(simpleSection[x + 1])).ToString()
-                    : (double.Parse(simpleSection[x - 1]) + double.Parse(simpleSection[x + 1])).ToString();
+                simpleSection[x - 1] = CalculateValues(simpleSection[x - 1], simpleSection[x + 1],
+                    simpleSection[x] == "-" ? "-" : "+");
                 simpleSection[x + 1] = simpleSection[x] = "";
                 x--;
             }
             return simpleSection.Where(x => !string.IsNullOrEmpty(x)).Sum(s => double.Parse(s));
+        }
+
+        /// <summary>
+        /// Learning how to use delegates, just figured I would throw this in
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
+        private delegate double Calculate(double x, double y);
+
+        /// <summary>
+        /// Runs the actual calcualtions, I wouldn't usually do it this way for other developers sake.
+        /// </summary>
+        /// <param name="strX"></param>
+        /// <param name="strY"></param>
+        /// <param name="calc">+, -, *, /</param>
+        /// <returns></returns>
+        private string CalculateValues(string strX, string strY, string calc)
+        {
+            Calculate cal = (a, b) =>
+            {
+                switch (calc)
+                {
+                    case "*":
+                        return a * b;
+                    case "+":
+                        return a + b;
+                    case "-":
+                        return a - b;
+                    case "/":
+                        return a / b;
+                    default:
+                        return 0;
+                }
+            };
+            return cal(double.Parse(strX), double.Parse(strY)).ToString();
         }
     }
     
