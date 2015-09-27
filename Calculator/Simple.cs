@@ -41,6 +41,7 @@ namespace Calculator
         {
             var spacedMath = new StringBuilder(math);
             spacedMath.Replace("(", " ( ")
+                .Replace("--","+")
                 .Replace(")-", ")- ")
                 .Replace(")", " ) ")
                 .Replace("+", " + ")

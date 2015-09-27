@@ -290,5 +290,28 @@ namespace CalculatorTest
             Console.WriteLine(tempCalc);
             Assert.IsTrue(tempCalc.Equals(1.7));
         }
+
+        [TestMethod]
+        public void double_negative()
+        {
+            var tempCalc = _simple.Solve("2--2");
+            Console.WriteLine(tempCalc);
+            Assert.IsTrue(tempCalc.Equals(4));
+        }
+
+        [TestMethod]
+        public void double_negative_in_parans()
+        {
+            var tempCalc = _simple.Solve("2-(-2)");
+            Console.WriteLine(tempCalc);
+            Assert.IsTrue(tempCalc.Equals(4));
+        }
+        [TestMethod]
+        public void double_minus()
+        {
+            var tempCalc = _simple.Solve("-2-2");
+            Console.WriteLine(tempCalc);
+            Assert.IsTrue(tempCalc.Equals(-4));
+        }
     }
 }
