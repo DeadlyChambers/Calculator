@@ -83,7 +83,7 @@ namespace Calculator
         /// <returns></returns>
         private double SolveOrderOfOperations(List<string> section)
         {
-            var poweredSection = PerformPowers(section);
+            PerformPowers(section);
             var simplesection = PerformMultiplicationAndDivision(section);
             return PerformAdditionAndSubtration(simplesection);
         }
@@ -94,7 +94,7 @@ namespace Calculator
         /// </summary>
         /// <param name="section"></param>
         /// <returns></returns>
-        private List<string> PerformPowers(List<string> section)
+        private void PerformPowers(List<string> section)
         {
             for (var x = 0; x < section.Count; x++)
             {
@@ -111,7 +111,6 @@ namespace Calculator
                     section[x] = CalculateValues(powers[0], toThePower, "^"); 
                 }
             }
-            return section;
         } 
 
         /// <summary>
@@ -123,13 +122,7 @@ namespace Calculator
         {
             var complexSection = section.Where(x => !string.IsNullOrEmpty(x)).ToList();
             for (var x = 0; x < complexSection.Count; x++)
-            {
-                if (complexSection[x] != "/" && complexSection[x] != "*") continue;
-                complexSection[x + 1] = CalculateValues(complexSection[x - 1], complexSection[x + 1],
-                    complexSection[x] == "/" ? "/" : "*");
-                complexSection[x - 1] = complexSection[x] = "";
-                x++;
-            }
+                x = PerformCoreCalculations(complexSection, x, "/", "*", false);
             return complexSection;
         }
 
@@ -143,14 +136,29 @@ namespace Calculator
         {
             var simpleSection = section.Where(x => !string.IsNullOrEmpty(x)).ToList();
             for (var x = simpleSection.Count - 1; x >= 0; x--)
-            {
-                if (simpleSection[x] != "-" && simpleSection[x] != "+") continue;
-                simpleSection[x - 1] = CalculateValues(simpleSection[x - 1], simpleSection[x + 1],
-                    simpleSection[x] == "-" ? "-" : "+");
-                simpleSection[x + 1] = simpleSection[x] = "";
-                x--;
-            }
+                x = PerformCoreCalculations(simpleSection, x, "-","+", true);
             return simpleSection.Where(x => !string.IsNullOrEmpty(x)).Sum(s => double.Parse(s));
+        }
+
+
+        /// <summary>
+        /// The core calculations that are performed for +,-,/,* have been consolidated to this method
+        /// </summary>
+        /// <param name="simpleSection"></param>
+        /// <param name="x">Current Index</param>
+        /// <param name="operand1">-,/</param>
+        /// <param name="operand2">+,*</param>
+        /// <param name="isLeftToRight">plus and minus are left to right, division and multiplication are not</param>
+        /// <returns></returns>
+        private int PerformCoreCalculations(List<string> simpleSection, int x, string operand1, string operand2, bool isLeftToRight)
+        {
+            var calculatedValue = isLeftToRight ? x - 1 : x + 1;
+            var emptyValue = isLeftToRight ? x + 1 : x - 1;
+            if (simpleSection[x] != operand1 && simpleSection[x] != operand2) return x;
+            simpleSection[calculatedValue] = CalculateValues(simpleSection[x - 1], simpleSection[x + 1],
+                simpleSection[x] == operand1 ? operand1 : operand2);
+            simpleSection[emptyValue] = simpleSection[x] = "";
+            return isLeftToRight?--x:++x;
         }
 
         /// <summary>
