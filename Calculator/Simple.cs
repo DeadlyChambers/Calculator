@@ -30,38 +30,7 @@ namespace Calculator
             ParseProblemWithParans(ProblemParsed.Count);
            return SolveOrderOfOperations(ProblemParsed);
         }
-        /// <summary>
-        /// If I was going to ensure each piece of the math problem was properly spaced,
-        /// I would do that right here. Might make public so I could write tests directly
-        /// against this.
-        /// </summary>
-        /// <param name="math"></param>
-        /// <returns></returns>
-        internal string EnsureProperlySpacedProblem(string math)
-        {
-            var spacedMath = new StringBuilder(math);
-            spacedMath.Replace("(", " ( ")
-                .Replace("--","+")
-                .Replace(")-", ")- ")
-                .Replace(")", " ) ")
-                .Replace("+", " + ")
-                .Replace("/", " / ")
-                .Replace("*", " * ")
-                .Replace("0-", "0 -")
-                .Replace("1-", "1 -")
-                .Replace("2-", "2 -")
-                .Replace("3-", "3 -")
-                .Replace("4-", "4 -")
-                .Replace("5-", "5 -")
-                .Replace("6-", "6 -")
-                .Replace("7-", "7 -")
-                .Replace("8-", "8 -")
-                .Replace("9-", "9 -")
-                .Replace("  ", " ")
-                .Replace("  ", " ");
-            return spacedMath.ToString().Trim();
-        }
-      
+       
         /// <summary>
         /// If the problem has parans we will turn those into doubles so that the problem will only
         /// need to follow order of operations. We go from right to left drilling into each set of parans
@@ -132,18 +101,14 @@ namespace Calculator
                 if (section[x].Contains("^"))
                 {
                     var powers = section[x].Split('^');
-                    var toThePower = 0.0;
-                    //If the power is in parans the power will not be in same iteration
-                    if (powers.Length == 1||string.IsNullOrEmpty(powers[1]))
+                    var toThePower = powers[1];
+                    //If the power is in parans the power will be one behind
+                    if (string.IsNullOrEmpty(toThePower))
                     {
-                        toThePower = double.Parse(section[x + 1]);
+                        toThePower = section[x + 1];
                         section[x + 1] = "";
                     }
-                    else
-                    {
-                        toThePower = double.Parse(powers[1]);
-                    }
-                    section[x] = Math.Pow(double.Parse(powers[0]), toThePower).ToString();
+                    section[x] = CalculateValues(powers[0], toThePower, "^"); 
                 }
             }
             return section;
@@ -209,12 +174,47 @@ namespace Calculator
                         return a - b;
                     case "/":
                         return a / b;
+                    case "^":
+                        return Math.Pow(a, b);
                     default:
                         return 0;
                 }
             };
             return calculation(double.Parse(strX), double.Parse(strY), calc).ToString();
         }
+
+        /// <summary>
+        /// If I was going to ensure each piece of the math problem was properly spaced,
+        /// I would do that right here. Might make public so I could write tests directly
+        /// against this.
+        /// </summary>
+        /// <param name="math"></param>
+        /// <returns></returns>
+        internal string EnsureProperlySpacedProblem(string math)
+        {
+            var spacedMath = new StringBuilder(math);
+            spacedMath.Replace("(", " ( ")
+                .Replace("--", "+")
+                .Replace(")-", ")- ")
+                .Replace(")", " ) ")
+                .Replace("+", " + ")
+                .Replace("/", " / ")
+                .Replace("*", " * ")
+                .Replace("0-", "0 -")
+                .Replace("1-", "1 -")
+                .Replace("2-", "2 -")
+                .Replace("3-", "3 -")
+                .Replace("4-", "4 -")
+                .Replace("5-", "5 -")
+                .Replace("6-", "6 -")
+                .Replace("7-", "7 -")
+                .Replace("8-", "8 -")
+                .Replace("9-", "9 -")
+                .Replace("  ", " ")
+                .Replace("  ", " ");
+            return spacedMath.ToString().Trim();
+        }
+      
     }
     
     
