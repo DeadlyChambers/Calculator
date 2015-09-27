@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace Calculator
 {
@@ -25,8 +26,7 @@ namespace Calculator
         /// <returns></returns>
         public double Solve(string math)
         {
-
-            ProblemParsed = EnsureProperlySpacedProblem(math).Split(null).ToList();
+            ProblemParsed = EnsureProperlySpacedProblem(math.Replace(" ","")).Split(null).ToList();
             ParseProblemWithParans(ProblemParsed.Count);
            return SolveOrderOfOperations(ProblemParsed);
         }
@@ -37,9 +37,28 @@ namespace Calculator
         /// </summary>
         /// <param name="math"></param>
         /// <returns></returns>
-        private string EnsureProperlySpacedProblem(string math)
+        internal string EnsureProperlySpacedProblem(string math)
         {
-            return math;
+            var spacedMath = new StringBuilder(math);
+            spacedMath.Replace("(", " ( ")
+                .Replace(")-", ")- ")
+                .Replace(")", " ) ")
+                .Replace("+", " + ")
+                .Replace("/", " / ")
+                .Replace("*", " * ")
+                .Replace("0-", "0 -")
+                .Replace("1-", "1 -")
+                .Replace("2-", "2 -")
+                .Replace("3-", "3 -")
+                .Replace("4-", "4 -")
+                .Replace("5-", "5 -")
+                .Replace("6-", "6 -")
+                .Replace("7-", "7 -")
+                .Replace("8-", "8 -")
+                .Replace("9-", "9 -")
+                .Replace("  ", " ")
+                .Replace("  ", " ");
+            return spacedMath.ToString().Trim();
         }
       
         /// <summary>
@@ -94,9 +113,41 @@ namespace Calculator
         /// <returns></returns>
         private double SolveOrderOfOperations(List<string> section)
         {
+            var poweredSection = PerformPowers(section);
             var simplesection = PerformMultiplicationAndDivision(section);
             return PerformAdditionAndSubtration(simplesection);
         }
+
+        /// <summary>
+        /// If there is something to a power we need to calculate that. It needs to
+        /// be first thing calculated.
+        /// </summary>
+        /// <param name="section"></param>
+        /// <returns></returns>
+        private List<string> PerformPowers(List<string> section)
+        {
+            for (var x = 0; x < section.Count; x++)
+            {
+                if (section[x].Contains("^"))
+                {
+                    var powers = section[x].Split('^');
+                    var toThePower = 0.0;
+                    //If the power is in parans the power will not be in same iteration
+                    if (powers.Length == 1||string.IsNullOrEmpty(powers[1]))
+                    {
+                        toThePower = double.Parse(section[x + 1]);
+                        section[x + 1] = "";
+                    }
+                    else
+                    {
+                        toThePower = double.Parse(powers[1]);
+                    }
+                    section[x] = Math.Pow(double.Parse(powers[0]), toThePower).ToString();
+                }
+            }
+            return section;
+        } 
+
         /// <summary>
         /// For multiplication read left to right, clear everything except the value which will
         /// be stored in the last position to allow for more operations if they exist.

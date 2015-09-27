@@ -15,7 +15,7 @@ namespace CalculatorTest
         [TestMethod]
         public void simple_multiplication()
         {
-            var calcValue = _simple.Solve("5 * 5");
+            var calcValue = _simple.Solve("5*5");
             Console.WriteLine(calcValue);
             Assert.IsTrue(calcValue.Equals(25));
         }
@@ -201,6 +201,94 @@ namespace CalculatorTest
             var tempCalc = _simple.Solve("4 * 8 + -5.3 / ( 9 + 7 )");
             Console.WriteLine(tempCalc);
             Assert.IsTrue(tempCalc.Equals(31.66875));
+        }
+
+        [TestMethod]
+        public void parse_simple_addition()
+        {
+            var spacedString = _simple.EnsureProperlySpacedProblem("5+5");
+            Console.WriteLine(spacedString);
+            Assert.IsTrue(spacedString.Equals("5 + 5"));
+        }
+
+        [TestMethod]
+        public void parse_parans_calculate_front_nested_multiply_extenal_nested_extended_double()
+        {
+            var tempCalc = _simple.EnsureProperlySpacedProblem("(((5+2)*(1+1)+5)-1)/2/5");
+            Console.WriteLine(tempCalc);
+            Assert.IsTrue(tempCalc.Equals("( ( ( 5 + 2 ) * ( 1 + 1 ) + 5 ) - 1 ) / 2 / 5"));
+        }
+
+        [TestMethod]
+        public void parse_power()
+        {
+            var tempCalc = _simple.EnsureProperlySpacedProblem("2^2");
+            Console.WriteLine(tempCalc);
+            Assert.IsTrue(tempCalc.Equals("2^2"));
+        }
+
+        [TestMethod]
+        public void simple_power()
+        {
+            var tempCalc = _simple.Solve("2^2");
+            Console.WriteLine(tempCalc);
+            Assert.IsTrue(tempCalc.Equals(4));
+        }
+
+        [TestMethod]
+        public void simple_power_addition()
+        {
+            var tempCalc = _simple.Solve("2^2+2");
+            Console.WriteLine(tempCalc);
+            Assert.IsTrue(tempCalc.Equals(6));
+        }
+
+        [TestMethod]
+        public void simple_power_addition_with_parans()
+        {
+            var tempCalc = _simple.Solve("2^(2+2)");
+            Console.WriteLine(tempCalc);
+            Assert.IsTrue(tempCalc.Equals(16));
+        }
+
+        [TestMethod]
+        public void simple_power_addition_with_negative()
+        {
+            var tempCalc = _simple.Solve("2^-3");
+            Console.WriteLine(tempCalc);
+            Assert.IsTrue(tempCalc.Equals(.125));
+        }
+
+        [TestMethod]
+        public void simple_power_addition_with_negative_add()
+        {
+            var tempCalc = _simple.Solve("2^-3+5");
+            Console.WriteLine(tempCalc);
+            Assert.IsTrue(tempCalc.Equals(5.125));
+        }
+
+        [TestMethod]
+        public void simple_power_addition_with_negative_add_parans()
+        {
+            var tempCalc = _simple.Solve("(2^-3)+5");
+            Console.WriteLine(tempCalc);
+            Assert.IsTrue(tempCalc.Equals(5.125));
+        }
+
+        [TestMethod]
+        public void simple_power_addition_with_negative_multiply()
+        {
+            var tempCalc = _simple.Solve("2^-3*5");
+            Console.WriteLine(tempCalc);
+            Assert.IsTrue(tempCalc.Equals(.625));
+        }
+
+        [TestMethod]
+        public void parse_parans_calculate_front_nested_multiply_extenal_nested_extended_double_power()
+        {
+            var tempCalc = _simple.Solve("(((5+2)*(1+1)+2^2)-1)/2/5");
+            Console.WriteLine(tempCalc);
+            Assert.IsTrue(tempCalc.Equals(1.7));
         }
     }
 }
